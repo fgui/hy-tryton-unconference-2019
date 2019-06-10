@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Lisp ERP</title>
+<meta name="author" content="(Francesc Guillén)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="css/reveal.css"/>
+
+<link rel="stylesheet" href="css/theme/simple.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+
+<section>
+<section id="slide-sec-">
+<h2 id="orgabf8314">Lisp ERP</h2>
+<p>
+Get Hy with Tryton
+</p>
+
+<aside class="notes">
+<p>
+
+</p>
+
+<p>
+Today I am going to talk about developing modules in <b>Tryton using a dialect of Lisp called Hy</b>.
+</p>
+
+<ul>
+<li>I will talk a bit about Lisp.</li>
+<li>I'll try to explain why Lisp.</li>
+<li>We will see  what Hy feels like.</li>
+<li>Finally we will see how to write modules in Hy for Tryton.</li>
+
+</ul>
+
+<p>
+I am guessing that many people her programs in python.
+</p>
+
+<p>
+How many of you program in more than one programming language?
+</p>
+
+<p>
+Do you prefer a language over another?
+</p>
+
+<p>
+I do I like dialect of Lisp and even within the dialects I've one that I like best.
+</p>
+
+<p>
+It’s been years since I moved as much as possible away for java and javacript in favour of clojure and clojurescript the lisp alternatives to them. 
+I knew there was no clojure for python and even if there was it would had been an uphill battle, but hy is not clojure. Hy as I will explain it is very python while clojure is almost zero javanish.
+</p>
+
+<p>
+I didn’t choose tryton because python. 
+I didn’t come to Tryton thinking that I may be able program in a Lisp dialect even though I really really really like Lisps and in particular I love clojure.
+I really thought that I would had to learn python and live a bit of a pythonic life. 
+In fact the first module that I wrote was and still is written in python.  
+Finding out that I could write most of the code of my tryton modules in Lisp made me a very happy developer. I love Lisp and I feel very fortunate that I can program with Hy while developing modules in Tryton.
+I still live a minor pythonic life though Hy and reading Tryon’s code.
+</p>
+
+</aside>
+
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org953b5b3">Tryton Rocks</h2>
+<ul>
+<li>local support</li>
+<li>open source / org / foundation</li>
+<li>community</li>
+<li>tech: architecture, postgres, scenarios, testing, &#x2026;</li>
+
+</ul>
+
+<aside class="notes">
+<p>
+I did not choose tryton because it’s written in python. 
+</p>
+
+<p>
+I’ve programmed in a few languages before but never Python before Tryton.
+</p>
+
+<p>
+I choose it because I like that:
+</p>
+
+<p>
+There is a local company which provides support development and hosting. 
+It is open source and not only was open source and it had a foundation, it is a .org not a .com.
+There is community. 
+</p>
+
+<p>
+It has sound architecture. 
+</p>
+
+</aside>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org8b4618d">My path to Lisp</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org57cd8e7">What's this thing?</h2>
+<p>
+AI course
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="orgc77a93e">I want it</h2>
+<ul>
+<li>Paul Graham - Hackers and painters <i>2005</i></li>
+<li>Abelson &amp; Sussman SICP lectures and book</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org8ba1cc9">Yes I can!</h2>
+<p>
+Rich Hickey - Clojure 
+</p>
+
+<aside class="notes">
+<p>
+I belive the 1st time I saw a lisp was in the AI class at Uni. I did an small assigment with 2 other people using it. I didn't think to much of it at that point. 
+</p>
+
+<p>
+Later on my career after having work for 6 years as a developer I read hackers and painters. I was really interested on Lisp. But programming in it did not feel realistic. I working for somebody else and it was not an option.
+I felt that there was no real option for me to choose Lisp dialect as my main programming language at that point.
+</p>
+
+<p>
+When clojure happen it cover a niche It leavearge all the power of the JVM (java virtual machine) with a fresh dialect of Lisp with a bunch of great ideas.
+</p>
+
+<p>
+For the last few years I have been graduatly moving away from java and javascript into clojure and no looking back.
+</p>
+
+</aside>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org3b7be83">Lisp?</h2>
+<ul>
+<li>By John McCarthy 1958ish at MIT.</li>
+<li>Lisp : family of programming languages.</li>
+<li>Flavors. Common Lisp, Scheme, Racket&#x2026;</li>
+<li>Functional.  Dynamic.  Garbage Collected. Code-as-data. REPL&#x2026;</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org3d2ae75">New Flavors of Lisp</h2>
+<ul>
+<li>Java <i>1995</i> -&gt; Clojure <i>2007</i>'</li>
+<li>Erlang <i>1986</i> -&gt; LFE <i>2008</i></li>
+<li>Javascript <i>1995</i> -&gt; Clojurescript (cljs) <i>2011</i>'</li>
+<li>Python <i>1990</i> -&gt; Hy <i>2013</i>'</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org6dbc7af">Clojure for JVM <i>vs</i> Hy for Python</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org10140c8">Clojure Hosted (<b>not</b> Javaistic)</h2>
+<p>
+"Clojure is a robust, practical, and fast programming language with a set of useful features that together form a simple, coherent, and powerful tool."
+</p>
+
+<ul>
+<li>dynamic</li>
+<li>own data structure</li>
+<li>control mutation/state</li>
+<li>&#x2026;</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="orge60cf21">Hy Embedded (Pythonistic)</h2>
+<p>
+"Hy is a wonderful dialect of Lisp that’s embedded in Python."
+</p>
+
+<p>
+"Since Hy transforms its Lisp code into the Python Abstract Syntax Tree, you have the whole beautiful world of Python at your fingertips, in Lisp form!"
+</p>
+
+<ul>
+<li>Python data structures</li>
+<li>Python truthiness</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org21bd8ed">What's special about Lisp?</h2>
+<ul>
+<li>S-expression</li>
+<li>simple syntax</li>
+<li>infx notation</li>
+<li>code-as-data - meta-programming</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org8d19eeb">(operation operant1 op2 &#x2026;)</h2>
+<div class="org-src-container">
+
+<pre  class="src src-hy"><span style="color: #707183;">(</span><span style="color: #e44649;">+</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>1<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>2<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>3<span style="color: #707183;">)</span>
+<span style="color: #707183;">(</span><span style="color: #a626a4;">if</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">(</span>event?<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>2<span style="color: #7388d6;">)</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"yes"</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"what?"</span><span style="color: #707183;">)</span>
+<span style="color: #707183;">(</span><span style="color: #e44649;">=</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>1<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>2<span style="color: #707183;">)</span>
+<span style="color: #707183;">(</span><span style="color: #a626a4;">defn</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #0184bc;">inc2</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">[</span>x<span style="color: #7388d6;">]</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">(</span><span style="color: #e44649;">+</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>2<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>x<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="orga061452">(((((())))))</h2>
+<ul>
+<li>buy one get two</li>
+<li>print('hello') -&gt; (print "hello")</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org62d26f7">Test hy</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="orge88dde7">Hy Tryton Modules</h2>
+<ul>
+<li>pip install hy</li>
+<li>create a module ​</li>
+<li>​_<sub>init</sub>_<sub>.py</sub> (as usual + import hy)</li>
+<li>Write hylang files .hy files instead of python.</li>
+<li>You still have to write the same xml files :)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org72c416e">Let's look at some code.</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org3a5b48d">hello.hy</h2>
+<div class="org-src-container">
+
+<pre  class="src src-hy"><span style="color: #707183;">(</span><span style="color: #a626a4;">import</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">[</span>trytond.model<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">[</span>ModelSQL<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>ModelView<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>fields<span style="color: #909183;">]</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>
+
+<span style="color: #707183;">(</span><span style="color: #a626a4;">defclass</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #c18401;">Hello</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">[</span>ModelSQL<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>ModelView<span style="color: #7388d6;">]</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">  </span><span style="color: #50a14f; font-style: italic;">"Hello</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f; font-style: italic;">World"</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">  </span><span style="color: #7388d6;">[</span><span style="color: #e44649;">--name--</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"hello"</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">   </span><span style="color: #e44649;">name</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">(</span>.Char<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>fields<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"Name"</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #008b8b;">:required</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #008b8b;">True</span><span style="color: #909183;">)</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">   </span>greeting<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">(</span>.Function<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>fields
+<span style="color: #d3d3d3; background-color: #ffffe0;">                       </span><span style="color: #709870;">(</span>.Char<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>fields<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"Greeting"</span><span style="color: #709870;">)</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">                       </span><span style="color: #50a14f;">"get_greeting"</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>
+
+<span style="color: #d3d3d3; background-color: #ffffe0;">  </span><span style="color: #7388d6;">(</span><span style="color: #a626a4;">defn</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #0184bc;">get-greeting</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">[</span><span style="color: #a626a4;">self</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #e44649;">name</span><span style="color: #909183;">]</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">    </span><span style="color: #909183;">(</span>.format<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"Hello</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">{}"</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #a626a4;">self</span>.name<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org9b7fdf6">Example macro default</h2>
+<div class="org-src-container">
+
+<pre  class="src src-python"><span style="color: #c18401;">@classmethod</span>
+<span style="color: #a626a4;">def</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #0184bc;">default_company</span><span style="color: #707183;">(</span>cls<span style="color: #707183;">)</span>:
+<span style="color: #d3d3d3; background-color: #f2f2f2;"> </span><span style="color: #d3d3d3; background-color: #ffffe0;">   </span><span style="color: #a626a4;">return</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>Transaction<span style="color: #707183;">()</span>.context.get<span style="color: #707183;">(</span><span style="color: #50a14f;">'company'</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-hy"><span style="color: #707183;">(</span><span style="color: #c18401;">with-decorator</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #c18401;">classmethod</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">   </span><span style="color: #7388d6;">(</span><span style="color: #a626a4;">defn</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #0184bc;">default-company</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">[</span>cls<span style="color: #909183;">]</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">      </span><span style="color: #909183;">(</span>.get<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #709870;">(</span>.<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #907373;">(</span>Transaction<span style="color: #907373;">)</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>context<span style="color: #709870;">)</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"company"</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-hy"><span style="color: #707183;">(</span>default<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>company
+<span style="color: #d3d3d3; background-color: #ffffe0;">    </span><span style="color: #7388d6;">(</span>.get<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">(</span>.<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #709870;">(</span>Transaction<span style="color: #709870;">)</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>context<span style="color: #909183;">)</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"company"</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org1f9cd56">Macro source</h2>
+<div class="org-src-container">
+
+<pre  class="src src-hy"><span style="color: #707183;">(</span><span style="color: #a626a4;">defn</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #0184bc;">default-func-name</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">[</span><span style="color: #e44649;">name</span><span style="color: #7388d6;">]</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">  </span><span style="color: #7388d6;">(</span><span style="color: #e44649;">+</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"default_"</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #909183;">(</span>.replace<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #e44649;">name</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"-"</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"_"</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #707183;">(</span><span style="color: #a626a4;">defmacro</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #0184bc;">default</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #7388d6;">[</span>field<span style="color: #d3d3d3; background-color: #ffffe0;"> </span>args<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #c18401;">&amp;rest</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>body<span style="color: #7388d6;">]</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">  </span>`<span style="color: #7388d6;">(</span><span style="color: #c18401;">with-decorator</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #c18401;">classmethod</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">     </span><span style="color: #909183;">(</span><span style="color: #a626a4;">defn</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #e44649;">~</span><span style="color: #709870;">(</span>HySymbol<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #907373;">(</span>default-func-name<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #6276ba;">(</span><span style="color: #e44649;">name</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>field<span style="color: #6276ba;">)</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+<span style="color: #d3d3d3; background-color: #ffffe0;">       </span><span style="color: #e44649;">~</span><span style="color: #709870;">(</span><span style="color: #e44649;">+</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #907373;">[</span><span style="color: #6276ba;">(</span>HySymbol<span style="color: #d3d3d3; background-color: #ffffe0;"> </span><span style="color: #50a14f;">"cls"</span><span style="color: #6276ba;">)</span><span style="color: #907373;">]</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>args<span style="color: #709870;">)</span><span style="color: #d3d3d3; background-color: #ffffe0;"> </span>~@body<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="orga56992c">Why learn Lisp?</h2>
+<p>
+"free your mind and the rest will follow"
+</p>
+
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="org7049753">Thanks / Questions?</h2>
+<p>
+fgui (github &amp; bitbucket)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-sec-">
+<h2 id="orgcab40c6">References</h2>
+<ul>
+<li><a href="http://docs.hylang.org/en/stable/">Hy hylang</a></li>
+<li><a href="http://tryton.org">Tryton</a></li>
+<li>Clojure</li>
+<li><a href="https://github.com/matthiasn/talk-transcripts/tree/master/Hickey_Rich">Rich Hickey Transcripts Talks</a></li>
+<li><a href="http://paulgraham.com/">Paul Graham</a></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
